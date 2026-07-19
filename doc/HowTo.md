@@ -4,6 +4,8 @@
 
 Here we will describe howTo for various settings.
 
+- [Deployment Overview](#deployment-overview)
+- [Deploy a guest application sample](#deploy-a-guest-application-sample)
 - [VisualStudioCode Setup Instructions](#VisualStudioCode-Setup-Instructions)
 - [Git pre-commit hook setup](#Git-pre-commit-hook-setup)
 - [Skip Deployment Approvals and Don't Roll Back](#skip-deployment-approvals-and-dont-roll-back)
@@ -12,6 +14,108 @@ Here we will describe howTo for various settings.
 - [Update package dependencies](#update-package-dependencies)
 - [Development process](#development-process)
 - [Remediate Security Issues](#remediate-security-issues)
+- [Optional Baseline Setups](#optional-baseline-setups)
+
+---
+
+## Deployment Overview
+
+This section describes the typical deployment procedure for BLEA. The example below deploys the standalone governance base and a guest application to a single account.
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (>= `18.0.0`) with `npm` (>= `8.1.0`)
+- [Git](https://git-scm.com/)
+
+npm uses workspaces, so 8.1.0 or higher is required:
+
+```sh
+npm install -g npm
+```
+
+We also recommend setting up a development environment with an editor — see [VisualStudioCode Setup Instructions](#VisualStudioCode-Setup-Instructions).
+
+### Steps
+
+1. **Clone and initialize**
+
+```sh
+git clone https://github.com/aws-samples/baseline-environment-on-aws.git
+cd baseline-environment-on-aws
+npm ci
+```
+
+2. **Configure AWS CLI credentials**
+
+Set up a profile for your target account(s) in `~/.aws/credentials`:
+
+```text
+[prof_dev]
+aws_access_key_id = XXXXXXXXXXXXXXX
+aws_secret_access_key = YYYYYYYYYYYYYYY
+region = ap-northeast-1
+```
+
+3. **Create a deployment account**
+
+Use AWS Organizations to create a new member account. A single account without Organizations is possible, but member accounts are recommended for easier migration to multi-account management later.
+
+4. **Set up Slack for notifications**
+
+BLEA uses Slack channels for security and monitoring notifications. Create 2 channels and set up AWS Chatbot — see [Set up Slack for AWS ChatBot](#set-up-slack-for-aws-chatbot). Note the workspace ID and channel IDs.
+
+5. **Deploy the governance base**
+
+Edit `usecases/blea-gov-base-standalone/parameter.ts` with your account-specific values, then:
+
+```sh
+cd usecases/blea-gov-base-standalone
+npx aws-cdk bootstrap --profile prof_dev
+npx aws-cdk deploy --all --profile prof_dev
+```
+
+This sets up: CloudTrail, AWS Config, GuardDuty, Security Hub (FSBP + CIS), default SG remediation, AWS Health notifications, and security event notifications via SNS → Slack/Email.
+
+6. **Deploy a guest application sample**
+
+Edit `usecases/blea-guest-serverless-api-sample/parameter.ts`, then:
+
+```sh
+cd usecases/blea-guest-serverless-api-sample
+npx aws-cdk deploy --all --profile prof_dev
+```
+
+> For multi-account deployment with Control Tower, see [Deploy to Control Tower environment](DeployToControlTower.md).
+
+After deployment, manually remediate CRITICAL/HIGH items reported by Security Hub — see [Remediate Security Issues](#remediate-security-issues).
+
+---
+
+## Deploy a guest application sample
+
+Once the governance base is deployed, you can deploy guest applications on top of it. The following example deploys the Serverless API application sample.
+
+1. Edit the parameter file:
+
+```sh
+usecases/blea-guest-serverless-api-sample/parameter.ts
+```
+
+Set `envName`, `monitoringNotifyEmail`, `monitoringSlackWorkspaceId`, and `monitoringSlackChannelId` for your environment.
+
+2. Deploy:
+
+```sh
+cd usecases/blea-guest-serverless-api-sample
+npx aws-cdk deploy --all --profile prof_dev
+```
+
+Other guest application samples (ECS, EC2, FSx for ONTAP modernization) follow the same pattern — edit `parameter.ts` in the respective `usecases/` directory and run `npx aws-cdk deploy --all`.
+
+After deployment, develop your own application based on the sample code:
+
+- [Development workflow](#development-process)
+- [Update dependencies](#update-package-dependencies)
 
 ---
 
@@ -374,3 +478,35 @@ CodeBuild should only enable privileged mode when building Docker images. If the
 Refer to the following document how to change the status of a workflow.
 
 ttps://docs.aws.amazon.com/securityhub/latest/userguide/finding-workflow-status.html
+
+
+---
+
+## Optional Baseline Setups
+
+In addition to the governance base, AWS provides several operational baseline services. Set these up as needed.
+
+### a. Enable Amazon Inspector
+
+Amazon Inspector scans workloads and manages vulnerabilities. It continuously scans EC2 and ECR to detect software vulnerabilities and unintended network exposure. Detected vulnerabilities are prioritized by risk score and automatically integrated with Security Hub.
+
+Setup: https://docs.aws.amazon.com/inspector/latest/user/getting_started_tutorial.html
+
+### b. AWS Systems Manager Quick Setup for EC2 management
+
+If you use EC2, manage instances with Systems Manager. Quick Setup automates the basic EC2 management configuration:
+
+- IAM instance profile roles required by Systems Manager
+- SSM Agent bi-weekly auto-updates
+- Inventory metadata collection every 30 minutes
+- Daily patch compliance scans
+- Initial CloudWatch agent installation and configuration
+- Monthly CloudWatch agent auto-updates
+
+Setup: https://docs.aws.amazon.com/systems-manager/latest/userguide/quick-setup-host-management.html
+
+### c. Trusted Advisor report notifications
+
+Trusted Advisor provides advice for following AWS best practices. You can receive report details by email on a regular basis.
+
+Setup: https://docs.aws.amazon.com/awssupport/latest/user/get-started-with-aws-trusted-advisor.html#preferences-trusted-advisor-console
