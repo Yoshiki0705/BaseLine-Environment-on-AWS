@@ -4,6 +4,8 @@
 
 ここでは各種設定の HowTo について記載します。
 
+- [デプロイ概要](#デプロイ概要)
+- [ゲストアプリケーションサンプルをデプロイする](#ゲストアプリケーションサンプルをデプロイする)
 - [VisualStudioCode のセットアップ](#VisualStudioCode-のセットアップ)
 - [Git の pre-commit hook のセットアップ](#Git-の-pre-commit-hook-のセットアップ)
 - [デプロイ時の承認をスキップしロールバックさせない](#デプロイ時の承認をスキップしロールバックさせない)
@@ -12,6 +14,108 @@
 - [依存パッケージの最新化](#依存パッケージの最新化)
 - [通常の開発の流れ](#通常の開発の流れ)
 - [セキュリティ指摘事項の修復](#セキュリティ指摘事項の修復)
+- [オプションのベースラインセットアップ](#オプションのベースラインセットアップ)
+
+---
+
+## デプロイ概要
+
+BLEA の典型的なデプロイ手順を説明します。以下の例では、単一アカウントに Standalone 版ガバナンスベースとゲストアプリケーションをデプロイします。
+
+### 前提条件
+
+- [Node.js](https://nodejs.org/) (>= `18.0.0`)、`npm` (>= `8.1.0`)
+- [Git](https://git-scm.com/)
+
+npm は workspaces を使用するため 8.1.0 以上が必要です:
+
+```sh
+npm install -g npm
+```
+
+エディタを含めた開発環境のセットアップも推奨します — [VisualStudioCode のセットアップ](#VisualStudioCode-のセットアップ) を参照。
+
+### 手順
+
+1. **リポジトリの取得と初期化**
+
+```sh
+git clone https://github.com/aws-samples/baseline-environment-on-aws.git
+cd baseline-environment-on-aws
+npm ci
+```
+
+2. **AWS CLI 認証情報の設定**
+
+デプロイ先アカウントのプロファイルを `~/.aws/credentials` に設定します:
+
+```text
+[prof_dev]
+aws_access_key_id = XXXXXXXXXXXXXXX
+aws_secret_access_key = YYYYYYYYYYYYYYY
+region = ap-northeast-1
+```
+
+3. **デプロイ対象のアカウント作成**
+
+Organizations を使って新しいメンバーアカウントを作成します。Organizations を使用しない単一アカウントも可能ですが、後のマルチアカウント移行を容易にするためメンバーアカウントの利用を推奨します。
+
+4. **通知用の Slack セットアップ**
+
+BLEA はセキュリティとモニタリング用に Slack チャネルを使用します。2 つのチャネルを作成し、AWS Chatbot をセットアップしてください — [AWSChatbot 用に Slack を設定する](#AWSChatbot-用に-Slack-を設定する) を参照。ワークスペース ID とチャネル ID をメモします。
+
+5. **ガバナンスベースのデプロイ**
+
+`usecases/blea-gov-base-standalone/parameter.ts` にアカウント固有の値を設定し:
+
+```sh
+cd usecases/blea-gov-base-standalone
+npx aws-cdk bootstrap --profile prof_dev
+npx aws-cdk deploy --all --profile prof_dev
+```
+
+これにより以下がセットアップされます: CloudTrail、AWS Config、GuardDuty、Security Hub (FSBP + CIS)、デフォルト SG 自動修復、AWS Health 通知、セキュリティイベント通知（SNS → Slack/Email）。
+
+6. **ゲストアプリケーションサンプルのデプロイ**
+
+`usecases/blea-guest-serverless-api-sample/parameter.ts` を編集し:
+
+```sh
+cd usecases/blea-guest-serverless-api-sample
+npx aws-cdk deploy --all --profile prof_dev
+```
+
+> Control Tower を使ったマルチアカウントデプロイについては [Control Tower 環境へのデプロイ](DeployToControlTower_ja.md) を参照。
+
+デプロイ後、Security Hub の CRITICAL/HIGH 項目を手動で修復してください — [セキュリティ指摘事項の修復](#セキュリティ指摘事項の修復) を参照。
+
+---
+
+## ゲストアプリケーションサンプルをデプロイする
+
+ガバナンスベースのデプロイが完了したら、その上にゲストアプリケーションを導入します。以下はサーバーレス API アプリケーションサンプルのデプロイ例です。
+
+1. パラメータファイルを編集:
+
+```sh
+usecases/blea-guest-serverless-api-sample/parameter.ts
+```
+
+`envName`、`monitoringNotifyEmail`、`monitoringSlackWorkspaceId`、`monitoringSlackChannelId` を環境に合わせて設定します。
+
+2. デプロイ:
+
+```sh
+cd usecases/blea-guest-serverless-api-sample
+npx aws-cdk deploy --all --profile prof_dev
+```
+
+他のゲストアプリケーションサンプル（ECS、EC2、FSx for ONTAP モダナイゼーション）も同じパターンです — 各 `usecases/` ディレクトリの `parameter.ts` を編集して `npx aws-cdk deploy --all` を実行します。
+
+デプロイ後、サンプルコードを起点に独自のアプリケーションを開発します:
+
+- [通常の開発の流れ](#通常の開発の流れ)
+- [依存パッケージの最新化](#依存パッケージの最新化)
 
 ---
 
@@ -374,3 +478,35 @@ CodeBuild では Docker イメージをビルドするときにのみ特権モ�
 ワークフローのステータスを変更する方法は以下のドキュメントを参照してください。
 
 https://docs.aws.amazon.com/securityhub/latest/userguide/finding-workflow-status.html
+
+
+---
+
+## オプションのベースラインセットアップ
+
+ガバナンスベースに加え、AWS はいくつかの運用上のベースラインサービスを提供しています。必要に応じてセットアップしてください。
+
+### a. Amazon Inspector を有効化
+
+Amazon Inspector はワークロードをスキャンし脆弱性を管理します。EC2 と ECR を継続的にスキャンしてソフトウェアの脆弱性や意図しないネットワーク露出を検出します。検出された脆弱性はリスクスコアに基づき優先順位付けされ、Security Hub と自動統合されます。
+
+セットアップ手順: https://docs.aws.amazon.com/inspector/latest/user/getting_started_tutorial.html
+
+### b. EC2 管理のための AWS Systems Manager Quick Setup
+
+EC2 を利用する場合は Systems Manager による管理を推奨します。Quick Setup は EC2 の基本的な管理設定を自動化します:
+
+- Systems Manager に必要な IAM インスタンスプロファイルロールの設定
+- SSM Agent の隔週自動アップデート
+- 30 分ごとのインベントリメタデータ収集
+- パッチ不足を検出するための日次スキャン
+- 初回の Amazon CloudWatch agent インストールと設定
+- CloudWatch agent の月次自動アップデート
+
+セットアップ手順: https://docs.aws.amazon.com/systems-manager/latest/userguide/quick-setup-host-management.html
+
+### c. Trusted Advisor の検知結果レポート
+
+Trusted Advisor は AWS のベストプラクティスに従うためのアドバイスを提供します。レポート内容を定期的にメールで受け取ることが可能です。
+
+セットアップ手順: https://docs.aws.amazon.com/awssupport/latest/user/get-started-with-aws-trusted-advisor.html#preferences-trusted-advisor-console
