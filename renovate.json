@@ -1,0 +1,46 @@
+{
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests",
+    ":semanticCommitsDisabled"
+  ],
+  "forkProcessing": "enabled",
+  "timezone": "Asia/Tokyo",
+  "schedule": ["before 6am on monday"],
+  "labels": ["dependencies"],
+  "commitMessagePrefix": "chore(deps):",
+  "dependencyDashboard": true,
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"]
+  },
+  "osvVulnerabilityAlerts": true,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "packageRules": [
+    {
+      "description": "Group all GitHub Actions updates together, pin digests per repo security policy",
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions",
+      "pinDigests": true
+    },
+    {
+      "description": "Group npm dependency updates (root and workspaces)",
+      "matchManagers": ["npm"],
+      "groupName": "npm-dependencies"
+    },
+    {
+      "description": "Require manual approval for major version bumps",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Pin esbuild below 0.22 (CDK compatibility, see aws/aws-cdk#30726)",
+      "matchPackageNames": ["esbuild"],
+      "allowedVersions": "<0.22.0"
+    }
+  ],
+  "ignorePaths": ["node_modules/**", "cdk.out/**"]
+}
