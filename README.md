@@ -9,14 +9,14 @@
 
 ## Get Started
 
-| What you want to do | Guide | Time |
-| --- | --- | --- |
-| Deploy governance baseline (single account) | [HowTo](doc/HowTo.md) | 30 min |
-| Deploy governance baseline (multi-account w/ Control Tower) | [Deploy to Control Tower](doc/DeployToControlTower.md) | 60 min |
-| Deploy a guest application sample | [HowTo — Guest App](doc/HowTo.md#deploy-a-guest-application-sample) | 15 min |
-| Migrate from Standalone to Control Tower | [Migration Guide](doc/Standalone2ControlTower.md) | 45 min |
-| Set up CI/CD pipeline deployment | [Pipeline Deployment](doc/PipelineDeployment.md) | 30 min |
-| Migrate from v2 to v3 | [v3 Migration Guide](doc/HowToMigrateToV3.md) | 20 min |
+| What you want to do                                         | Guide                                                               | Time   |
+| ----------------------------------------------------------- | ------------------------------------------------------------------- | ------ |
+| Deploy governance baseline (single account)                 | [HowTo](doc/HowTo.md)                                               | 30 min |
+| Deploy governance baseline (multi-account w/ Control Tower) | [Deploy to Control Tower](doc/DeployToControlTower.md)              | 60 min |
+| Deploy a guest application sample                           | [HowTo — Guest App](doc/HowTo.md#deploy-a-guest-application-sample) | 15 min |
+| Migrate from Standalone to Control Tower                    | [Migration Guide](doc/Standalone2ControlTower.md)                   | 45 min |
+| Set up CI/CD pipeline deployment                            | [Pipeline Deployment](doc/PipelineDeployment.md)                    | 30 min |
+| Migrate from v2 to v3                                       | [v3 Migration Guide](doc/HowToMigrateToV3.md)                       | 20 min |
 
 ## Architecture
 
@@ -123,10 +123,10 @@ See full-resolution diagrams: [Multi-Account](doc/images/BLEA-ArchMultiAccount.p
 
 ### Governance Baselines
 
-| Use Case | Folder |
-| --- | --- |
-| Standalone governance base | `usecases/blea-gov-base-standalone` |
-| Control Tower governance base (guest accounts) | `usecases/blea-gov-base-ct` |
+| Use Case                                       | Folder                              |
+| ---------------------------------------------- | ----------------------------------- |
+| Standalone governance base                     | `usecases/blea-gov-base-standalone` |
+| Control Tower governance base (guest accounts) | `usecases/blea-gov-base-ct`         |
 
 Control Tower governance base offers 3 deployment options:
 
@@ -136,11 +136,11 @@ Control Tower governance base offers 3 deployment options:
 
 ### Guest System Samples
 
-| Use Case | Folder |
-| --- | --- |
-| ECS web application | `usecases/blea-guest-ecs-app-sample` |
-| EC2 web application | `usecases/blea-guest-ec2-app-sample` |
-| Serverless API application | `usecases/blea-guest-serverless-api-sample` |
+| Use Case                    | Folder                                          |
+| --------------------------- | ----------------------------------------------- |
+| ECS web application         | `usecases/blea-guest-ecs-app-sample`            |
+| EC2 web application         | `usecases/blea-guest-ec2-app-sample`            |
+| Serverless API application  | `usecases/blea-guest-serverless-api-sample`     |
 | FSx for ONTAP modernization | `usecases/blea-guest-fsxn-modernization-sample` |
 
 > Each use case can be deployed independently.
@@ -149,13 +149,13 @@ Control Tower governance base offers 3 deployment options:
 
 <details><summary>⚠️ Constraints & Notes</summary>
 
-| Item | Detail |
-| --- | --- |
-| Supported CDK version | Uses local `npx aws-cdk` (project-pinned version) |
-| Node.js | >= 18.0.0, npm >= 8.1.0 (workspaces) |
-| Versioning | Semantic Versioning applies to governance bases only; guest samples may have breaking changes without migration guides |
-| Parameters | Managed via `parameter.ts` (TypeScript) per use case since v3.0 |
-| Security findings | After deployment, manually remediate CRITICAL/HIGH items reported by Security Hub |
+| Item                  | Detail                                                                                                                 |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Supported CDK version | Uses local `npx aws-cdk` (project-pinned version)                                                                      |
+| Node.js               | >= 18.0.0, npm >= 8.1.0 (workspaces)                                                                                   |
+| Versioning            | Semantic Versioning applies to governance bases only; guest samples may have breaking changes without migration guides |
+| Parameters            | Managed via `parameter.ts` (TypeScript) per use case since v3.0                                                        |
+| Security findings     | After deployment, manually remediate CRITICAL/HIGH items reported by Security Hub                                      |
 
 </details>
 

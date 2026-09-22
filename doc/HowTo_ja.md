@@ -479,7 +479,6 @@ CodeBuild では Docker イメージをビルドするときにのみ特権モ�
 
 https://docs.aws.amazon.com/securityhub/latest/userguide/finding-workflow-status.html
 
-
 ---
 
 ## オプションのベースラインセットアップ
