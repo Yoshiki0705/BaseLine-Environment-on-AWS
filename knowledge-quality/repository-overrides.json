@@ -1,0 +1,25 @@
+{
+  "schema": "knowledge-quality/repository-overrides/v1",
+  "overrides": [
+    {
+      "category": "scan-root",
+      "value": "doc",
+      "reason": "This repository's documentation tree (note: 'doc', not 'docs'). English and Japanese are paired by an _ja filename suffix rather than by language subdirectory. The primary surface for the naming, neutrality, and public-output audit."
+    },
+    {
+      "category": "scan-root",
+      "value": "usecases",
+      "reason": "CDK sample applications (including blea-guest-fsxn-modernization-sample) with README prose and inline comments carrying service names; in scope for the naming rule."
+    },
+    {
+      "category": "exclusion",
+      "value": ".private",
+      "reason": "Gitignored (if present). Holds review provenance and any support-case references that must never reach public output; excluded from the public-facing audit surface by design."
+    },
+    {
+      "category": "localization-tier",
+      "value": "bilingual-en-primary-ja-suffix",
+      "reason": "This repository is English-primary with Japanese translations paired by an _ja filename suffix (README.md / README_ja.md, HowTo.md / HowTo_ja.md). It does not use the Hub's docs/<lang> directory model; this value records its actual localization shape as its own configuration, not copied Hub rule text."
+    }
+  ]
+}
