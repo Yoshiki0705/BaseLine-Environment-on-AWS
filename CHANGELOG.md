@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.0](https://github.com/Yoshiki0705/BaseLine-Environment-on-AWS/compare/v3.1.0...v3.2.0) (2026-09-22)
+
+
+### Features
+
+* add release-please automation for GitHub releases ([fea86cd](https://github.com/Yoshiki0705/BaseLine-Environment-on-AWS/commit/fea86cd19c2320d354efaef8565524831adb737a))
+* migrate from standard-version to release-please ([534b98e](https://github.com/Yoshiki0705/BaseLine-Environment-on-AWS/commit/534b98e32f91a6e535dbbeca24b4997c4fcc6ea5))
+
 ## [3.1.0](https://github.com/aws-samples/baseline-environment-on-aws/compare/v3.0.0...v3.1.0) (2025-10-07)
 
 
