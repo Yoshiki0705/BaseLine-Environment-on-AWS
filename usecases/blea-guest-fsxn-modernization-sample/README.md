@@ -36,14 +36,14 @@
 
 ## Features
 
-| Component | Description |
-| --- | --- |
-| **FSx for ONTAP** | Shared file system with NFS volume + S3 Access Point |
+| Component                  | Description                                                                            |
+| -------------------------- | -------------------------------------------------------------------------------------- |
+| **FSx for ONTAP**          | Shared file system with NFS volume + S3 Access Point                                   |
 | **Compute (toggle-based)** | EC2 ASG (NFS), Lambda (S3 AP), ECS Fargate (S3 AP), EKS (Trident CSI), AWS Batch (NFS) |
-| **Monitoring** | CloudWatch alarms on capacity utilization → SNS → Slack/Email |
-| **Serverless Ops** | Lambda-based auto-capacity-expansion triggered by alarm |
-| **Data Protection** | AWS Backup with configurable retention |
-| **Encryption** | KMS CMK with key rotation enabled |
+| **Monitoring**             | CloudWatch alarms on capacity utilization → SNS → Slack/Email                          |
+| **Serverless Ops**         | Lambda-based auto-capacity-expansion triggered by alarm                                |
+| **Data Protection**        | AWS Backup with configurable retention                                                 |
+| **Encryption**             | KMS CMK with key rotation enabled                                                      |
 
 ## Prerequisites
 
@@ -63,19 +63,19 @@ npx aws-cdk deploy --all --profile prof_dev
 
 ## Parameters
 
-| Parameter | Description | Default (dev) |
-| --- | --- | --- |
-| `fsxnStorageCapacityGiB` | Total SSD storage capacity | 1024 |
-| `fsxnThroughputCapacityMBps` | Throughput capacity (128/256/512/1024/2048/4096) | 128 |
-| `fsxnDeploymentType` | `MULTI_AZ_1` or `SINGLE_AZ_1` | `SINGLE_AZ_1` |
-| `enableEc2Pattern` | Deploy EC2 Auto Scaling Group with NFS mount | `true` |
-| `enableLambdaPattern` | Deploy Lambda function with S3 AP access | `true` |
-| `enableEcsPattern` | Deploy ECS Fargate service with S3 AP access | `false` |
-| `enableEksPattern` | Deploy EKS cluster (Trident CSI ready) | `false` |
-| `enableBatchPattern` | Deploy AWS Batch with NFS mount | `false` |
-| `backupRetentionDays` | AWS Backup retention | 7 |
-| `capacityAlarmThresholdPercent` | CloudWatch alarm threshold for auto-expand | 80 |
-| `maxCapacityGiB` | Maximum capacity the auto-expand function will scale to | 2048 |
+| Parameter                       | Description                                             | Default (dev) |
+| ------------------------------- | ------------------------------------------------------- | ------------- |
+| `fsxnStorageCapacityGiB`        | Total SSD storage capacity                              | 1024          |
+| `fsxnThroughputCapacityMBps`    | Throughput capacity (128/256/512/1024/2048/4096)        | 128           |
+| `fsxnDeploymentType`            | `MULTI_AZ_1` or `SINGLE_AZ_1`                           | `SINGLE_AZ_1` |
+| `enableEc2Pattern`              | Deploy EC2 Auto Scaling Group with NFS mount            | `true`        |
+| `enableLambdaPattern`           | Deploy Lambda function with S3 AP access                | `true`        |
+| `enableEcsPattern`              | Deploy ECS Fargate service with S3 AP access            | `false`       |
+| `enableEksPattern`              | Deploy EKS cluster (Trident CSI ready)                  | `false`       |
+| `enableBatchPattern`            | Deploy AWS Batch with NFS mount                         | `false`       |
+| `backupRetentionDays`           | AWS Backup retention                                    | 7             |
+| `capacityAlarmThresholdPercent` | CloudWatch alarm threshold for auto-expand              | 80            |
+| `maxCapacityGiB`                | Maximum capacity the auto-expand function will scale to | 2048          |
 
 ## License
 
@@ -93,14 +93,14 @@ MIT-0. See [LICENSE](../../LICENSE).
 
 ### 機能
 
-| コンポーネント | 概要 |
-| --- | --- |
-| **FSx for ONTAP** | NFS ボリューム + S3 Access Point による共有ファイルシステム |
+| コンポーネント               | 概要                                                                                   |
+| ---------------------------- | -------------------------------------------------------------------------------------- |
+| **FSx for ONTAP**            | NFS ボリューム + S3 Access Point による共有ファイルシステム                            |
 | **コンピュート（トグル式）** | EC2 ASG (NFS)、Lambda (S3 AP)、ECS Fargate (S3 AP)、EKS (Trident CSI)、AWS Batch (NFS) |
-| **監視** | CloudWatch アラーム（容量使用率）→ SNS → Slack/Email |
-| **Serverless Ops** | アラームトリガーの Lambda による自動容量拡張 |
-| **データ保護** | AWS Backup（保持期間設定可能） |
-| **暗号化** | KMS CMK（キーローテーション有効） |
+| **監視**                     | CloudWatch アラーム（容量使用率）→ SNS → Slack/Email                                   |
+| **Serverless Ops**           | アラームトリガーの Lambda による自動容量拡張                                           |
+| **データ保護**               | AWS Backup（保持期間設定可能）                                                         |
+| **暗号化**                   | KMS CMK（キーローテーション有効）                                                      |
 
 ### 前提条件
 
@@ -120,19 +120,19 @@ npx aws-cdk deploy --all --profile prof_dev
 
 ### パラメータ
 
-| パラメータ | 説明 | デフォルト (dev) |
-| --- | --- | --- |
-| `fsxnStorageCapacityGiB` | 合計 SSD ストレージ容量 | 1024 |
-| `fsxnThroughputCapacityMBps` | スループット容量 (128/256/512/1024/2048/4096) | 128 |
-| `fsxnDeploymentType` | `MULTI_AZ_1` or `SINGLE_AZ_1` | `SINGLE_AZ_1` |
-| `enableEc2Pattern` | NFS マウント付き EC2 Auto Scaling Group をデプロイ | `true` |
-| `enableLambdaPattern` | S3 AP アクセス付き Lambda をデプロイ | `true` |
-| `enableEcsPattern` | S3 AP アクセス付き ECS Fargate をデプロイ | `false` |
-| `enableEksPattern` | EKS クラスター（Trident CSI 対応）をデプロイ | `false` |
-| `enableBatchPattern` | NFS マウント付き AWS Batch をデプロイ | `false` |
-| `backupRetentionDays` | AWS Backup 保持期間 | 7 |
-| `capacityAlarmThresholdPercent` | 自動拡張の CloudWatch アラームしきい値 | 80 |
-| `maxCapacityGiB` | 自動拡張がスケールする最大容量 | 2048 |
+| パラメータ                      | 説明                                               | デフォルト (dev) |
+| ------------------------------- | -------------------------------------------------- | ---------------- |
+| `fsxnStorageCapacityGiB`        | 合計 SSD ストレージ容量                            | 1024             |
+| `fsxnThroughputCapacityMBps`    | スループット容量 (128/256/512/1024/2048/4096)      | 128              |
+| `fsxnDeploymentType`            | `MULTI_AZ_1` or `SINGLE_AZ_1`                      | `SINGLE_AZ_1`    |
+| `enableEc2Pattern`              | NFS マウント付き EC2 Auto Scaling Group をデプロイ | `true`           |
+| `enableLambdaPattern`           | S3 AP アクセス付き Lambda をデプロイ               | `true`           |
+| `enableEcsPattern`              | S3 AP アクセス付き ECS Fargate をデプロイ          | `false`          |
+| `enableEksPattern`              | EKS クラスター（Trident CSI 対応）をデプロイ       | `false`          |
+| `enableBatchPattern`            | NFS マウント付き AWS Batch をデプロイ              | `false`          |
+| `backupRetentionDays`           | AWS Backup 保持期間                                | 7                |
+| `capacityAlarmThresholdPercent` | 自動拡張の CloudWatch アラームしきい値             | 80               |
+| `maxCapacityGiB`                | 自動拡張がスケールする最大容量                     | 2048             |
 
 ### License
 

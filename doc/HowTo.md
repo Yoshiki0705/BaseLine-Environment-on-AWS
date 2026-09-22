@@ -479,7 +479,6 @@ Refer to the following document how to change the status of a workflow.
 
 ttps://docs.aws.amazon.com/securityhub/latest/userguide/finding-workflow-status.html
 
-
 ---
 
 ## Optional Baseline Setups

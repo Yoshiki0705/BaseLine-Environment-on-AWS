@@ -1,9 +1,5 @@
 {
-  "extends": [
-    "config:recommended",
-    "helpers:pinGitHubActionDigests",
-    ":semanticCommitsDisabled"
-  ],
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigests", ":semanticCommitsDisabled"],
   "forkProcessing": "enabled",
   "timezone": "Asia/Tokyo",
   "schedule": ["before 6am on monday"],
